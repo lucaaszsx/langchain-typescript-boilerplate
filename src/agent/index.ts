@@ -1,4 +1,4 @@
-import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/langgraph'
+import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
 import { KNOWLEDGE_SYSTEM_PROMPT, readKnowledge } from '../util/knowledge.js';
 import type { BaseMessage, AIMessage } from '@langchain/core/messages';
@@ -14,7 +14,7 @@ export class AssistantAgent {
         messages: Annotation<BaseMessage[]>({
             reducer: (x, y) => x.concat(y)
         })
-    })
+    });
 
     public agent: ReturnType<typeof this.compileWorkflow> | null = null;
     private readonly memory = new MemorySaver();
@@ -36,7 +36,9 @@ export class AssistantAgent {
         return this;
     }
 
-    private async callModel(state: typeof AssistantAgent.GraphState.State): Promise<{ messages: BaseMessage[] }> {
+    private async callModel(
+        state: typeof AssistantAgent.GraphState.State
+    ): Promise<{ messages: BaseMessage[] }> {
         const prompt = await this.promptTemplate!.formatMessages({
             messages: state.messages,
             currentDate: toLocalISOString(),
@@ -49,7 +51,8 @@ export class AssistantAgent {
 
     private shouldContinue(state: typeof AssistantAgent.GraphState.State): string {
         const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
-        if (lastMessage && lastMessage.tool_calls && lastMessage.tool_calls.length > 0) return 'tools';
+        if (lastMessage && lastMessage.tool_calls && lastMessage.tool_calls.length > 0)
+            return 'tools';
 
         return END;
     }

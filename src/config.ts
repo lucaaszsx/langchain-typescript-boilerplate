@@ -10,7 +10,7 @@ function getEnvVariable(key: string, fallback?: unknown): unknown {
 export const Env = {
     /** Timezone */
     tz: getEnvVariable('TZ') as string,
-    
+
     /** Groq API key */
     apiKey: getEnvVariable('GROQ_API_KEY') as string,
 

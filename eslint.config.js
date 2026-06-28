@@ -43,8 +43,7 @@ export default tseslint.config(
                 'error',
                 { allowNumber: true, allowBoolean: true }
             ],
-            'no-unused-vars': 'off',
-            'no-console': 'error'
+            'no-unused-vars': 'off'
         }
     },
 
