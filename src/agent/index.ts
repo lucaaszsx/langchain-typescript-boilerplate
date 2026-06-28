@@ -29,7 +29,7 @@ export class AssistantAgent {
         const knowledge = await readKnowledge(KNOWLEDGE_SYSTEM_PROMPT);
 
         this.promptTemplate = ChatPromptTemplate.fromMessages([
-            new SystemMessage(knowledge.content),
+            ['system', knowledge.content],
             new MessagesPlaceholder('messages')
         ]);
         this.agent = this.compileWorkflow();
@@ -43,8 +43,8 @@ export class AssistantAgent {
             currentDate: toLocalISOString(),
             tz: Env.tz
         });
-        console.log({prompt})
         const response = await this.model.invoke(prompt);
+
         return { messages: [response] };
     }
 
