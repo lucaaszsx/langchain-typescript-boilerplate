@@ -7,6 +7,7 @@ import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AssistantTools } from './tools.js';
 import { ChatGroq } from '@langchain/groq';
 import { Env } from '../config.js';
+import { toLocalISOString } from '../util/index.js';
 
 export class AssistantAgent {
     public static readonly Model = 'openai/gpt-oss-120b';
@@ -37,7 +38,12 @@ export class AssistantAgent {
     }
 
     private async callModel(state: typeof AssistantAgent.GraphState.State): Promise<{ messages: BaseMessage[] }> {
-        const prompt = await this.promptTemplate!.formatMessages({ messages: state.messages });
+        const prompt = await this.promptTemplate!.formatMessages({
+            messages: state.messages,
+            currentDate: toLocalISOString(),
+            tz: Env.tz
+        });
+        console.log({prompt})
         const response = await this.model.invoke(prompt);
         return { messages: [response] };
     }
