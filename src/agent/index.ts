@@ -2,12 +2,11 @@ import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/lang
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
 import { KNOWLEDGE_SYSTEM_PROMPT, readKnowledge } from '../util/knowledge.js';
 import type { BaseMessage, AIMessage } from '@langchain/core/messages';
-import { SystemMessage } from '@langchain/core/messages';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
+import { toLocalISOString } from '../util/index.js';
 import { AssistantTools } from './tools.js';
 import { ChatGroq } from '@langchain/groq';
 import { Env } from '../config.js';
-import { toLocalISOString } from '../util/index.js';
 
 export class AssistantAgent {
     public static readonly Model = 'openai/gpt-oss-120b';
