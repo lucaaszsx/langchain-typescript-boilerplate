@@ -32,9 +32,11 @@
     },
     "homepage": "https://github.com/lucaaszsx/langchain-typescript-boilerplate#README",
     "scripts": {
+        "dev": "tsx watch src/cli.ts",
         "clean": "rimraf dist",
         "prebuild": "pnpm run type-check",
         "build": "tsc -p tsconfig.json",
+        "start": "node .",
         "type-check": "tsgo --noEmit",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
