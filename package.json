@@ -1,16 +1,50 @@
 {
+    "$schema": "https://json.schemastore.org/package.json",
     "name": "langchain-typescript-boilerplate",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "packageManager": "pnpm@11.9.0",
+    "description": "Boilerplate of an AI agent made in TypeScript with Groq (LLM), Ollama (embeddings), LangChain, and Qdrant with better-sqlite3 for RAG.",
+    "private": true,
     "type": "module",
+    "main": "./dist/cli.cjs",
+    "keywords": [
+        "boilerplate",
+        "company",
+        "langchain",
+        "agent",
+        "ollama",
+        "embeddings",
+        "qdrant",
+        "RAG",
+        "groq",
+        "LLM"
+    ],
+    "license": "MIT",
+    "author": {
+        "name": "Lucas",
+        "email": "jlucasmelob558@gmail.com",
+        "url": "https://github.com/lucaaszsx"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lucaaszsx/langchain-typescript-boilerplate.git"
+    },
+    "bugs": {
+        "url": "https://github.com/lucaaszsx/langchain-typescript-boilerplate/issues"
+    },
+    "homepage": "https://github.com/lucaaszsx/langchain-typescript-boilerplate#README",
+    "scripts": {
+        "clean": "rimraf dist",
+        "prebuild": "pnpm run type-check",
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsgo --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "check": "pnpm run type-check && pnpm run lint && pnpm run format:check",
+        "fix": "pnpm lint:fix && pnpm format:write",
+        "prepare": "husky"
+    },
+    "packageManager": "pnpm@11.9.0",
     "dependencies": {
         "@langchain/core": "^1.2.1",
         "@langchain/groq": "^1.3.1",
@@ -29,11 +63,13 @@
         "@eslint/js": "^10.0.1",
         "@types/better-sqlite3": "^7.6.13",
         "@types/node": "^26.0.1",
+        "@typescript/native-preview": "7.0.0-dev.20260628.1",
         "eslint": "^10.6.0",
         "eslint-config-prettier": "^10.1.8",
         "husky": "^9.1.7",
         "lint-staged": "^17.0.8",
         "prettier": "^3.8.5",
+        "rimraf": "^6.1.3",
         "tsx": "^4.22.4",
         "typescript": "^6.0.3",
         "typescript-eslint": "^8.62.0"
