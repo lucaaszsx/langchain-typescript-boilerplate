@@ -1,10 +1,10 @@
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { lstatSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import type { Database as DatabaseType } from 'better-sqlite3';
 import { embeddings } from "../services/embeddings.js";
 import { createHash, randomUUID } from "node:crypto";
-import { qdrant } from "../services/qdrant.js";
 import { relative, join, dirname } from "node:path";
+import { qdrant } from "../services/qdrant.js";
 import { Env } from "../config.js";
 import Database from 'better-sqlite3';
 
