@@ -26,6 +26,8 @@ dist
 .idea
 *.tsbuildinfo
 qdrant_storage
+.cache
+*.db
 
 # Cache
 .prettiercache

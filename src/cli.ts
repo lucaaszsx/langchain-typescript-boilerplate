@@ -16,7 +16,7 @@ const config = { thread_id: randomUUID() };
 
 async function main() {
     let prompt;
-    await assistant.start();
+    await assistant.init();
 
     do {
         prompt = await askQuestion('You: ');
@@ -29,7 +29,7 @@ async function main() {
             { configurable: config }
         );
         const lastMessage = response?.messages.at(-1);
-        console.log({ response });
+        
         if (lastMessage && lastMessage.content) {
             console.log(`Agent: ${lastMessage.content}\n`);
         } else {

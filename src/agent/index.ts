@@ -1,15 +1,15 @@
 import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
-import { KNOWLEDGE_SYSTEM_PROMPT, readKnowledge } from '../util/knowledge.js';
 import type { BaseMessage, AIMessage } from '@langchain/core/messages';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { toLocalISOString } from '../util/index.js';
-import { AssistantTools } from './tools.js';
 import { ChatGroq } from '@langchain/groq';
 import { Env } from '../config.js';
+import { AssistantKnowledge } from './knowledge.js';
+import tools from '../tools/index.js';
 
 export class AssistantAgent {
-    public static readonly Model = 'openai/gpt-oss-120b';
+    private static readonly Model = 'openai/gpt-oss-120b';
     private static readonly GraphState = Annotation.Root({
         messages: Annotation<BaseMessage[]>({
             reducer: (x, y) => x.concat(y)
@@ -17,22 +17,24 @@ export class AssistantAgent {
     });
 
     public agent: ReturnType<typeof this.compileWorkflow> | null = null;
+    private readonly knowledge = new AssistantKnowledge();
     private readonly memory = new MemorySaver();
     private readonly model = new ChatGroq({
         model: AssistantAgent.Model,
         apiKey: Env.apiKey
-    }).bindTools(AssistantTools);
-    private promptTemplate: ChatPromptTemplate | null = null;
+    }).bindTools(tools);
+    private readonly promptTemplate: ChatPromptTemplate | null = null;
 
-    public async start(): Promise<this> {
-        const knowledge = await readKnowledge(KNOWLEDGE_SYSTEM_PROMPT);
-
+    constructor() {
         this.promptTemplate = ChatPromptTemplate.fromMessages([
-            ['system', knowledge.content],
+            ['system', this.knowledge.getSystemPrompt()],
             new MessagesPlaceholder('messages')
         ]);
         this.agent = this.compileWorkflow();
+    }
 
+    public async init(): Promise<this> {
+        await this.knowledge.init();
         return this;
     }
 
@@ -60,7 +62,7 @@ export class AssistantAgent {
     private compileWorkflow() {
         const workflow = new StateGraph(AssistantAgent.GraphState)
             .addNode('agent', this.callModel.bind(this))
-            .addNode('tools', new ToolNode(AssistantTools))
+            .addNode('tools', new ToolNode(tools))
             .addEdge(START, 'agent')
             .addConditionalEdges('agent', this.shouldContinue.bind(this))
             .addEdge('tools', 'agent');
