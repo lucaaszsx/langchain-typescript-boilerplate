@@ -2,10 +2,10 @@ import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/lang
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
 import type { BaseMessage, AIMessage } from '@langchain/core/messages';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
-import { toLocalISOString } from '../util/index.js';
+import { AssistantKnowledge } from './knowledge.js';
+import { toLocalISOString } from '../util.js';
 import { ChatGroq } from '@langchain/groq';
 import { Env } from '../config.js';
-import { AssistantKnowledge } from './knowledge.js';
 import tools from '../tools/index.js';
 
 export class AssistantAgent {
