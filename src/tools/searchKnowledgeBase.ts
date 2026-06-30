@@ -1,9 +1,11 @@
 import { embeddings } from '../services/embeddings.js';
 import { qdrant } from '../services/qdrant.js';
+import { logger } from '../services/logger.js';
 import { Env } from '../config.js';
 import { tool } from 'langchain';
 import { z } from 'zod';
 
+const TOOL_NAME = 'search_knowledge_base';
 const SEARCH_KNOWLEDGE_BASE_SCHEMA = z.object({
     query: z
         .string()
@@ -24,9 +26,7 @@ const SEARCH_KNOWLEDGE_BASE_SCHEMA = z.object({
 
 export default tool(
     async ({ query, limit }: z.infer<typeof SEARCH_KNOWLEDGE_BASE_SCHEMA>): Promise<string> => {
-        console.info(
-            `[tool] tool "search_knowledge_base" called with limit ${limit} and query: ${query}`
-        );
+        logger.debugTool(TOOL_NAME, 'search request with limit %d and query:', limit, query);
 
         const vector = await embeddings.embedQuery(query);
         const results = await qdrant.search(Env.qdrant.collection, {
@@ -36,7 +36,11 @@ export default tool(
             vector,
             limit
         });
-        console.info('[tool] tool "search_knowledge_base" returned results:', results);
+        logger.debugTool(
+            TOOL_NAME,
+            '%d results were found for the specified query',
+            results.length
+        );
 
         if (results.length === 0)
             return `The search in the knowledge base was conducted. However, no relevant results were found for the query: ${query}`;
@@ -47,7 +51,7 @@ export default tool(
             .join('\n\n');
     },
     {
-        name: 'search_knowledge_base',
+        name: TOOL_NAME,
         description:
             'Searches for information within the knowledge base using a query. Returns the documents that best match the query',
         schema: SEARCH_KNOWLEDGE_BASE_SCHEMA

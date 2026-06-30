@@ -8,6 +8,8 @@ function getEnvVariable(key: string, fallback?: unknown): unknown {
 }
 
 export const Env = {
+    verbose: getEnvVariable('VERBOSE') === 'true',
+
     /** Timezone */
     tz: getEnvVariable('TZ') as string,
 
