@@ -131,18 +131,18 @@ export class AssistantKnowledge {
         this.metadata
             .prepare(
                 `
-            INSERT INTO documents (source, hash)
-            VALUES (?, ?)
-            ON CONFLICT (source) DO UPDATE SET hash = excluded.hash
-        `
+                INSERT INTO documents (source, hash)
+                VALUES (?, ?)
+                ON CONFLICT (source) DO UPDATE SET hash = excluded.hash
+            `
             )
             .run(source, hash);
     }
 
     private getAllHashes() {
         const rows = this.metadata
-            .prepare('SELECT source, hash FROM documents')
-            .all() as DocumentMetadata[];
+            .prepare<[], DocumentMetadata>('SELECT source, hash FROM documents')
+            .all();
         return new Map<string, string>(rows.map((row) => [row.source, row.hash]));
     }
 
