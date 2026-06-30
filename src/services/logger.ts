@@ -13,7 +13,7 @@ export const logger = {
     debug(...messages: unknown[]): void {
         if (!Env.verbose) return;
 
-        const timestamp = chalk.magenta(`[${new Date().toISOString()}]`);
+        const timestamp = chalk.blue(`[${new Date().toISOString()}]`);
         console.debug(...unshiftInfo(timestamp, messages));
     },
 

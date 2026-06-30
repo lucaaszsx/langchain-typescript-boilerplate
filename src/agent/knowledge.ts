@@ -5,6 +5,7 @@ import { embeddings } from '../services/embeddings.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { relative, join, dirname } from 'node:path';
 import { qdrant } from '../services/qdrant.js';
+import { logger } from '../services/logger.js';
 import { Env } from '../config.js';
 import Database from 'better-sqlite3';
 
@@ -52,6 +53,11 @@ export class AssistantKnowledge {
 
         // Creates the QDrant collection if not exists
         if (!(await qdrant.collectionExists(collection)).exists) {
+            logger.debug(
+                'qdrant "%s" collection doesn\'t exists, attempting to create',
+                collection
+            );
+
             await qdrant.createCollection(collection, {
                 vectors: {
                     size: Env.embeddings.dimension,
@@ -61,6 +67,10 @@ export class AssistantKnowledge {
         }
 
         // Creates the table to store the knowledge files metadata
+        logger.debug(
+            'creating table (if not exists) for storing metadata of knowledge base documents'
+        );
+
         this.metadata.exec(`
             CREATE TABLE IF NOT EXISTS documents (
                 source TEXT PRIMARY KEY,
@@ -79,16 +89,43 @@ export class AssistantKnowledge {
         const sources = new Set<string>();
 
         for (const { content, metadata } of this.loadDocuments()) {
-            // Ignores the system prompt
-            if (SYSTEM_PROMPT_PATH.endsWith(metadata.source)) continue;
-            sources.add(metadata.source);
+            const { source, hash } = metadata;
+            logger.debug('processing document: %s', source);
 
-            const originalHash = hashes.get(metadata.source);
-            if (metadata.hash === originalHash || content.length === 0) continue;
-            if (originalHash) await this.deleteDocumentPoints(metadata.source);
+            // Ignores the system prompt
+            if (SYSTEM_PROMPT_PATH.endsWith(source)) continue;
+
+            logger.debug(
+                'loading document %s with %d characters of content length',
+                source,
+                content.length
+            );
+            sources.add(source);
+
+            const originalHash = hashes.get(source);
+            if (hash === originalHash || content.length === 0) {
+                logger.debug(
+                    'the content of the current document matches the stored one, skipping the generation of chunks and vectors'
+                );
+                continue;
+            }
+            if (originalHash) {
+                logger.debug(
+                    'the content of the current document does not match the stored one, deleting points before starting vector generation'
+                );
+                await this.deleteDocumentPoints(source);
+            }
 
             const chunks = await splitter.splitText(content);
+            logger.debug(
+                'document content separated into a total of %d chunks. generating vectors',
+                chunks.length
+            );
+
+            const t0 = Date.now();
             const vectors = await embeddings.embedDocuments(chunks);
+            logger.debug('vectors generated. took: %dms', Date.now() - t0);
+
             const points = chunks.flatMap((chunk, index) => {
                 const vector = vectors[index];
                 if (!vector) return [];
@@ -97,18 +134,22 @@ export class AssistantKnowledge {
                     {
                         id: randomUUID(),
                         vector,
-                        payload: { source: metadata.source, chunk, index }
+                        payload: { source: source, chunk, index }
                     }
                 ];
             });
 
             await qdrant.upsert(collection, { points });
-            this.setHash(metadata.source, metadata.hash);
+            this.setHash(source, hash);
         }
 
         // Remove documents that no longer exist on knowledge base
         for (const source of hashes.keys()) {
             if (!sources.has(source)) {
+                logger.debug(
+                    '%s source was deleted from knowledge base, deleting points and stored hash',
+                    source
+                );
                 await this.deleteDocumentPoints(source);
                 this.deleteHash(source);
             }
