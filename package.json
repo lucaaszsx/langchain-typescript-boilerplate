@@ -32,7 +32,8 @@
     },
     "homepage": "https://github.com/lucaaszsx/langchain-typescript-boilerplate#README",
     "scripts": {
-        "dev": "tsx watch src/cli.ts",
+        "dev": "tsx src/cli.ts",
+        "dev:watch": "tsx watch src/cli.ts",
         "clean": "rimraf dist",
         "prebuild": "pnpm run type-check",
         "build": "tsc -p tsconfig.json",
