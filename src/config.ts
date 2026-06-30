@@ -25,6 +25,7 @@ export const Env = {
     qdrant: {
         host: getEnvVariable('QDRANT_HOST') as string,
         port: parseInt(getEnvVariable('QDRANT_PORT') as string, 10),
-        collection: getEnvVariable('QDRANT_COLLECTION') as string
+        collection: getEnvVariable('QDRANT_COLLECTION') as string,
+        scoreThreshold: parseFloat(getEnvVariable('QDRANT_SCORE_THRESHOLD') as string)
     }
 } as const;

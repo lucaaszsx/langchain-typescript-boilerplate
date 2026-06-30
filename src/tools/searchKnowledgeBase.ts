@@ -16,11 +16,25 @@ const SEARCH_KNOWLEDGE_BASE_SCHEMA = z.object({
 
 export default tool(
     async ({ query, limit }: z.infer<typeof SEARCH_KNOWLEDGE_BASE_SCHEMA>): Promise<string> => {
+        console.info(
+            `[tool] tool "search_knowledge_base" called with limit ${limit} and query: ${query}`
+        );
+
         const vector = await embeddings.embedQuery(query);
-        const results = await qdrant.search(Env.qdrant.collection, { vector, limit, with_payload: true });
+        const results = await qdrant.search(Env.qdrant.collection, {
+            with_payload: true,
+            with_vector: false,
+            score_threshold: Env.qdrant.scoreThreshold,
+            vector,
+            limit
+        });
+        console.info('[tool] tool "search_knowledge_base" returned results:', results);
+
+        if (results.length === 0)
+            return `The search in the knowledge base was conducted. However, no relevant results were found for the query: ${query}`;
 
         return results
-            .map((point) => point?.payload?.["chunk"])
+            .map((point) => point?.payload?.['chunk'])
             .filter(Boolean)
             .join('\n\n');
     },
