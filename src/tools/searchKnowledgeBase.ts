@@ -7,7 +7,15 @@ import { z } from 'zod';
 const SEARCH_KNOWLEDGE_BASE_SCHEMA = z.object({
     query: z
         .string()
-        .describe('The query that should be used to search for entries in the knowledge base'),
+        .describe(
+            'The keyword-based query that should be used to search the knowledge base.\n' +
+                'Rules:\n' +
+                '- Remove the filler conversation.\n' +
+                "- Do not use the company's name unless it is really necessary.\n" +
+                '- Keep only nouns, entities and concepts relevant to the search.\n' +
+                '- Prefer terms likely to appear verbatim in documents.\n' +
+                '- When possible, it is preferable that the queries be in English.'
+        ),
     limit: z
         .number()
         .default(5)
