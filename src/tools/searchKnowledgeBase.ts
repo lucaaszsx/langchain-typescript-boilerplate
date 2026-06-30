@@ -1,8 +1,8 @@
+import { embeddings } from '../services/embeddings.js';
+import { qdrant } from '../services/qdrant.js';
+import { Env } from '../config.js';
 import { tool } from 'langchain';
 import { z } from 'zod';
-import { qdrant } from '../services/qdrant.js';
-import { embeddings } from '../services/embeddings.js';
-import { Env } from '../config.js';
 
 const SEARCH_KNOWLEDGE_BASE_SCHEMA = z.object({
     query: z
@@ -41,7 +41,7 @@ export default tool(
     {
         name: 'search_knowledge_base',
         description:
-            'Searches for information within the database using a query. Returns the documents that best match the query',
+            'Searches for information within the knowledge base using a query. Returns the documents that best match the query',
         schema: SEARCH_KNOWLEDGE_BASE_SCHEMA
     }
 );
