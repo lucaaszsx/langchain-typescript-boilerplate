@@ -2,7 +2,9 @@
 
 A simple AI agent built with TypeScript using LangChain that responds with information about a fictional company using search tools and a basic RAG system, which uses Qdrant for vector storage and better-sqlite3 to store metadata of the knowledge base files.
 
-> [!WARNING] This AI agent was one of the first I created, so it may not be well optimized for real use, especially due to the formulation of the prompts.
+<!-- prettier-ignore -->
+> [!WARNING]
+> This AI agent was one of the first I created, so it may not be well optimized for real use, especially due to the formulation of the prompts.
 
 ## Preview
 
@@ -87,7 +89,9 @@ docker run -p 6333:6333 -p 6334:6334 \
     qdrant/qdrant
 ```
 
-> [!WARNING] On Windows, you may need to create a named Docker volume instead of mounting a local folder.
+<!-- prettier-ignore -->
+> [!WARNING]
+> On Windows, you may need to create a named Docker volume instead of mounting a local folder.
 
 ### Running Ollama
 
