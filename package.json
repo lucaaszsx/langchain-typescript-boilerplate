@@ -4,7 +4,7 @@
     "description": "Boilerplate of an AI agent made in TypeScript with Groq (LLM), Ollama (embeddings), LangChain, and Qdrant with better-sqlite3 for RAG.",
     "private": true,
     "type": "module",
-    "main": "./dist/cli.cjs",
+    "main": "./dist/cli.js",
     "keywords": [
         "boilerplate",
         "company",
@@ -35,7 +35,6 @@
         "dev": "tsx src/cli.ts",
         "dev:watch": "tsx watch src/cli.ts",
         "clean": "rimraf dist",
-        "prebuild": "pnpm run type-check",
         "build": "tsc -p tsconfig.json",
         "start": "node .",
         "type-check": "tsgo --noEmit",
