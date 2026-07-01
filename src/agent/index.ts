@@ -1,6 +1,6 @@
 import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
-import type { BaseMessage, AIMessage } from '@langchain/core/messages';
+import { type BaseMessage, type AIMessage, HumanMessage } from '@langchain/core/messages';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AssistantKnowledge } from './knowledge.js';
 import { toLocalISOString } from '../util.js';
@@ -16,14 +16,14 @@ export class AssistantAgent {
         })
     });
 
-    public agent: ReturnType<typeof this.compileWorkflow> | null = null;
+    private readonly agent: ReturnType<typeof this.compileWorkflow>;
     private readonly knowledge = new AssistantKnowledge();
     private readonly memory = new MemorySaver();
     private readonly model = new ChatGroq({
         model: AssistantAgent.Model,
         apiKey: Env.apiKey
     }).bindTools(tools);
-    private readonly promptTemplate: ChatPromptTemplate | null = null;
+    private readonly promptTemplate: ChatPromptTemplate;
 
     constructor() {
         this.promptTemplate = ChatPromptTemplate.fromMessages([
@@ -38,10 +38,18 @@ export class AssistantAgent {
         return this;
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    public invoke(threadId: string, prompt: string) {
+        return this.agent.invoke(
+            {messages: [new HumanMessage(prompt)]},
+            { configurable: { thread_id: threadId } }
+        );
+    }
+
     private async callModel(
         state: typeof AssistantAgent.GraphState.State
     ): Promise<{ messages: BaseMessage[] }> {
-        const prompt = await this.promptTemplate!.formatMessages({
+        const prompt = await this.promptTemplate.formatMessages({
             messages: state.messages,
             currentDate: toLocalISOString(),
             tz: Env.tz
