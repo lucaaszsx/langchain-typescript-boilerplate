@@ -9,7 +9,7 @@ A simple AI agent built with TypeScript using LangChain that responds with infor
 ## Preview
 
 <p align="center">
-  <img src="./assets/preview.gif" alt="Preview" width="500">
+  <img src="./assets/preview.gif" alt="Preview" width="600">
 </p>
 
 ## Table of contents
@@ -25,6 +25,8 @@ A simple AI agent built with TypeScript using LangChain that responds with infor
     - [Running Qdrant](#running-qdrant)
     - [Running Ollama](#running-ollama)
     - [Cloning the repo](#cloning-the-repo)
+    - [Environment setup](#environment-setup)
+        - [Environment variables](#environment-variables)
     - [Running the agent](#running-the-agent)
 - [Building the agent](#building-the-agent)
 - [Contributing](#contributing)
@@ -124,17 +126,32 @@ git clone https://github.com/lucaaszsx/langchain-typescript-boilerplate ./assist
 cd ./assistant-agent # navigate to the local repo folder
 ```
 
-### Running the agent
+### Environment setup
 
-After cloning this repository, you will be able to run the agent. To begin, you should start by creating your file with the environment variables. To do this, you can just copy the content of `.env.example` and put into the `.env` file. Just like this (if you're using a Linux-based distro):
+After cloning this repository, you will be able to run the agent. To begin, you should start by creating your file with the environment variables. To do this, you can just copy the content of `.env.example` and put into the `.env` file. Just like this, if you're using a Linux-based distro:
 
 ```bash
 cp .env.example .env
 ```
 
-Having the file with the environment variables, open it and replace it with your own credentials and change whatever else you need.
+#### Environment variables
 
-Now, install the project dependencies:
+- `VERBOSE`: if verbose mode should be active
+- `TZ`: timezone to generate current time data to pass to the AI
+- `GROQ_API_KEY`: your Groq API key, you can get one [here]() **(\*)**
+- `OLLAMA_EMBEDDINGS_BASE_URL`: the base URL where the Ollama server is running **(\*)**
+- `OLLAMA_EMBEDDINGS_MODEL`: the Ollama embeddings model
+- `OLLAMA_EMBEDDINGS_DIMENSION`: the dimensions of the selected model, only change this if you change the model
+- `QDRANT_HOST`: the host where the Qdrant server is running, only change if you're not running qdrant at localhost **(\*)**
+- `QDRANT_PORT`: the port where the Qdrant server is running, only change if you're using a different port **(\*)**
+- `QDRANT_COLLECTION`: the Qdrant collection name
+- `QDRANT_SCORE_THRESHOLD`: the score threshold set for returning information chunks in the RAG system
+
+<em>\* - needs changes</em>
+
+### Running the agent
+
+Now, with the environment variables configured, install the project dependencies:
 
 ```bash
 pnpm install
