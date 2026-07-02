@@ -1,6 +1,18 @@
-import { MemorySaver, Annotation, StateGraph, START, END } from '@langchain/langgraph';
+import {
+    messagesStateReducer,
+    MemorySaver,
+    Annotation,
+    StateGraph,
+    START,
+    END
+} from '@langchain/langgraph';
 import { MessagesPlaceholder, ChatPromptTemplate } from '@langchain/core/prompts';
-import { type BaseMessage, type AIMessage, HumanMessage } from '@langchain/core/messages';
+import {
+    type BaseMessage,
+    type AIMessage,
+    HumanMessage,
+    RemoveMessage
+} from '@langchain/core/messages';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AssistantKnowledge } from './knowledge.js';
 import { toLocalISOString } from '../util.js';
@@ -10,9 +22,11 @@ import tools from '../tools/index.js';
 
 export class AssistantAgent {
     private static readonly Model = 'openai/gpt-oss-120b';
+    private static readonly MaxMessages = 10;
     private static readonly GraphState = Annotation.Root({
         messages: Annotation<BaseMessage[]>({
-            reducer: (x, y) => x.concat(y)
+            reducer: messagesStateReducer,
+            default: () => []
         })
     });
 
@@ -41,7 +55,7 @@ export class AssistantAgent {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public invoke(threadId: string, prompt: string) {
         return this.agent.invoke(
-            {messages: [new HumanMessage(prompt)]},
+            { messages: [new HumanMessage(prompt)] },
             { configurable: { thread_id: threadId } }
         );
     }
@@ -49,14 +63,32 @@ export class AssistantAgent {
     private async callModel(
         state: typeof AssistantAgent.GraphState.State
     ): Promise<{ messages: BaseMessage[] }> {
+        const contextMessages = this.trimHistory(state.messages);
         const prompt = await this.promptTemplate.formatMessages({
-            messages: state.messages,
+            messages: contextMessages,
             currentDate: toLocalISOString(),
             tz: Env.tz
         });
         const response = await this.model.invoke(prompt);
 
-        return { messages: [response] };
+        return {
+            messages: [
+                ...state.messages
+                    .filter((message) => !contextMessages.includes(message))
+                    .map((message) => new RemoveMessage({ id: message.id! })),
+                response
+            ]
+        };
+    }
+
+    private trimHistory(messages: BaseMessage[]): BaseMessage[] {
+        if (messages.length <= AssistantAgent.MaxMessages) return messages;
+
+        let startIndex = messages.length - AssistantAgent.MaxMessages;
+        while (startIndex < messages.length && messages[startIndex]?.getType() === 'tool')
+            startIndex++;
+
+        return messages.slice(startIndex);
     }
 
     private shouldContinue(state: typeof AssistantAgent.GraphState.State): string {
