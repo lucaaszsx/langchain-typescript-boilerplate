@@ -1,6 +1,6 @@
 # AI Agent Boilerplate
 
-A simple AI agent built with TypeScript using LangChain that responds with information about a fictional company using search tools and a basic RAG system, which uses Qdrant for vector storage and better-sqlite3 to store metadata of the knowledge base files.
+A simple AI agent built with TypeScript using **[LangChain](https://docs.langchain.com/build-overview)** that responds with information about a fictional company using search tools and a basic RAG system, which uses Qdrant for vector storage and better-sqlite3 to store metadata of the knowledge base files.
 
 <!-- prettier-ignore -->
 > [!WARNING]
@@ -42,7 +42,7 @@ A simple AI agent built with TypeScript using LangChain that responds with infor
 
 ## Agent
 
-The agent was built with LangChain in conjunction with the integration of Groq, using the `openai/gpt-oss-120b` model, and uses LangGraph for managing the state of the message history.
+The agent was built with LangChain in conjunction with the integration of Groq, using the **`openai/gpt-oss-120b`** model, and uses LangGraph for managing the state of the message history.
 
 ### Tools
 
@@ -55,15 +55,15 @@ The agent currently has two tools that can be used to handle user requests, name
 
 ### Embeddings
 
-So that the project could run for free to facilitate testing, I wanted to use a model provided by Ollama to create embeddings (vectors). The model I used locally and that is defined in the `.env.example` was `nomic-embed-text-v2-moe`, which supports over 100 languages and is very well optimized, [you can access the official page here](https://ollama.com/library/nomic-embed-text-v2-moe). You can choose another model if you want, just adjust the settings correctly.
+So that the project could run for free to facilitate testing, I wanted to use a model provided by Ollama to create embeddings (vectors). The model I used locally and that is defined in the `.env.example` was **`nomic-embed-text-v2-moe`**, which supports over 100 languages and is very well optimized, **[you can access the official page here](https://ollama.com/library/nomic-embed-text-v2-moe)**. You can choose another model if you want, just adjust the settings correctly.
 
 ### Vector storage
 
-As vector storage, I decided to use [Qdrant](https://qdrant.tech/documentation/quickstart/) to store the vectors resulting from the generation of the aforementioned embedding model and use them in the RAG system.
+As vector storage, I decided to use **[Qdrant](https://qdrant.tech/documentation/quickstart/)** to store the vectors resulting from the generation of the aforementioned embedding model and use them in the RAG system.
 
 ### Metadata storage
 
-In this project, the `better-sqlite3` library was used to store the metadata of the knowledge base files. These stored metadata are basically the `source`, which is the path to the file in the knowledge base, and `hash`, which is the hash of the file's content, used to perform the comparison and check whether the file has been modified or not.
+In this project, the **[better-sqlite3](https://www.npmjs.com/package/better-sqlite3)** library was used to store the metadata of the knowledge base files. These stored metadata are basically the **`source`**, which is the path to the file in the knowledge base, and **`hash`**, which is the hash of the file's content, used to perform the comparison and check whether the file has been modified or not.
 
 The verification is performed to avoid having to call the embeddings model to generate new vectors for all the knowledge base files every time the application is initialized. With this verification, it becomes possible to generate vectors only for the files that have actually been modified or that have not yet had the initial vectors generated.
 
@@ -75,7 +75,7 @@ To run this agent locally, you need to follow some steps, considering that it de
 
 This project was made to work with Qdrant running locally, so if you are using Qdrant in the cloud, you may need to make some changes.
 
-To run Qdrant on your local machine, according to the [official documentation](https://qdrant.tech/documentation/quickstart/), you can follow these steps:
+To run Qdrant on your local machine, according to the **[official documentation](https://qdrant.tech/documentation/quickstart/)**, you can follow these steps:
 
 1. First, download the latest Qdrant image from Dockerhub:
 
@@ -97,7 +97,7 @@ docker run -p 6333:6333 -p 6334:6334 \
 
 ### Running Ollama
 
-To install Ollama, you can access the [download page](https://ollama.com/download) and run the suggested command on your machine.
+To install Ollama, you can access the **[download page](https://ollama.com/download)** and run the suggested command on your machine.
 
 After doing this, you can check if Ollama was installed correctly on your machine, for that, run the following command:
 
@@ -105,7 +105,7 @@ After doing this, you can check if Ollama was installed correctly on your machin
 ollama --version
 ```
 
-Now it will be necessary to download an embeddings model. You can use the one I initially defined (`nomic-embed-text-v2-moe`), or use any other of your preference, as long as you configure it correctly in your environment variables. To download, just run the command:
+Now it will be necessary to download an embeddings model. You can use the one I initially defined (**`nomic-embed-text-v2-moe`**), or use any other of your preference, as long as you configure it correctly in your environment variables. To download, just run the command:
 
 ```
 ollama pull nomic-embed-text-v2-moe # or other model
@@ -138,7 +138,7 @@ cp .env.example .env
 
 - `VERBOSE`: if verbose mode should be active
 - `TZ`: timezone to generate current time data to pass to the AI
-- `GROQ_API_KEY`: your Groq API key, you can get one [here]() **(\*)**
+- `GROQ_API_KEY`: your Groq API key, you can get one **[here](https://console.groq.com/keys)** **(\*)**
 - `OLLAMA_EMBEDDINGS_BASE_URL`: the base URL where the Ollama server is running **(\*)**
 - `OLLAMA_EMBEDDINGS_MODEL`: the Ollama embeddings model
 - `OLLAMA_EMBEDDINGS_DIMENSION`: the dimensions of the selected model, only change this if you change the model
@@ -147,7 +147,7 @@ cp .env.example .env
 - `QDRANT_COLLECTION`: the Qdrant collection name
 - `QDRANT_SCORE_THRESHOLD`: the score threshold set for returning information chunks in the RAG system
 
-<em>\* - needs changes</em>
+<em>\* - indicates that the value of the variable may need adjustments</em>
 
 ### Running the agent
 
@@ -180,4 +180,4 @@ Actually, I created this repository with the sole purpose of recording some lear
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](./LICENSE) for full license text.
+This project is licensed under the MIT License. See **[LICENSE](./LICENSE)** for full license text.
